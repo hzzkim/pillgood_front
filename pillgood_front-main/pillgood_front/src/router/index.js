@@ -10,6 +10,7 @@ import Template from '../views/Template.vue';
 // 기존 코드에서 추가된 컴포넌트들
 import ProductDetail from '../views/ProductDetail.vue';
 import CartPage from '../views/CartPage.vue'; // CartPage.vue로 이름 수정
+import ProductList from '../views/ProductList.vue'; // ProductList 컴포넌트 추가
 
 const routes = [
   { path: '/', component: Home },
@@ -30,6 +31,11 @@ const routes = [
     path: '/cart', // 동적 라우팅 부분 제거
     name: 'CartPage', // 이름 수정 (소문자에서 대문자로)
     component: CartPage
+  },
+  {
+    path: '/products',
+    name: 'ProductList',
+    component: ProductList
   }
 ];
 
