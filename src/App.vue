@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <HeaderView />
+    <main class="main-content">
     <router-view />
+    </main>
     <FooterView />
   </div>
 </template>
@@ -44,22 +46,22 @@ export default {
   });
 
   // 주기적으로 세션 상태 확인
-  setInterval(() => {
-    this.$store.dispatch('checkLoginStatus').then(() => {
-      if (this.$store.state.isLoggedIn) {
-        // console.log('30초마다 세션 테스트 중');
-        this.$store.dispatch('fetchMemberInfo', this.$store.state.memberId); // memberId 전달
-        const member = this.$store.state.member;
-        if (member) {
-          // console.log(`현재 로그인된 사용자 ID: ${this.$store.state.memberId}`)
-        } else {
-          console.log(`로그인한 사용자가 없습니다.`)
-        }
-      } else {
-        alert('로그인된 사용자가 없음.')
-      }
-    });
-  }, 30000); // 30초마다 실행
+  // setInterval(() => {
+  //   this.$store.dispatch('checkLoginStatus').then(() => {
+  //     if (this.$store.state.isLoggedIn) {
+  //       // console.log('30초마다 세션 테스트 중');
+  //       this.$store.dispatch('fetchMemberInfo', this.$store.state.memberId); // memberId 전달
+  //       const member = this.$store.state.member;
+  //       if (member) {
+  //         // console.log(`현재 로그인된 사용자 ID: ${this.$store.state.memberId}`)
+  //       } else {
+  //         console.log(`로그인한 사용자가 없습니다.`)
+  //       }
+  //     } else {
+  //       alert('로그인된 사용자가 없음.')
+  //     }
+  //   });
+  // }, 30000); // 30초마다 실행
 
     this.$watch(
       () => this.$store.state.isLoggedIn,
@@ -84,5 +86,10 @@ html, body {
 #app {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
 }
 </style>

@@ -16,6 +16,10 @@
               <input type="search" placeholder="검색어를 입력하세요" aria-label="Search"
                 class="form-control form-control-white text-bg-white search-input">
             </div>
+            <!-- 사용자 이름 -->
+            <div class="user-name" v-if="isLoggedIn">
+              <span>{{ member?.name }} 님</span>
+            </div>
             <!-- 아이콘 -->
             <div class="icon-container">
               <router-link v-if="isLoggedIn" to="/mypage" class="icon-link">
@@ -55,12 +59,14 @@ export default {
   name: 'HeaderView',
   computed: {
     ...mapState({
-      isLoggedIn: state => state.isLoggedIn
+      isLoggedIn: state => state.isLoggedIn,
+      member: state => state.member
     })
   },
   methods: {
     logout() {
       this.$store.dispatch('logout');
+      this.$router.push('/')
     }
   },
   watch: {
@@ -70,11 +76,11 @@ export default {
   },
   created() {
     // 주기적으로 isLoggedIn 상태 확인
-    setInterval(() => {
-      // isLoggedIn 상태를 확인하는 디버깅 로그를 추가
-      // console.log('mapState 안 된다고!!!! :', this.isLoggedIn);
-      console.log('10초마다 isLoggedIn 상태 확인:', this.$store.state.isLoggedIn);
-    }, 10000); // 10초마다 실행
+    // setInterval(() => {
+    //   // isLoggedIn 상태를 확인하는 디버깅 로그를 추가
+    //   // console.log('mapState 안 된다고!!!! :', this.isLoggedIn);
+    //   console.log('10초마다 isLoggedIn 상태 확인:', this.$store.state.isLoggedIn);
+    // }, 10000); // 10초마다 실행
   }
 };
 </script>

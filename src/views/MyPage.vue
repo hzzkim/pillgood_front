@@ -4,18 +4,25 @@
       <h4 class="text-melon">마이페이지</h4>
       <div>
         <div v-if="user">
-          <table>
+          <table class="mypage">
             <tr>
               <td><label for="email">이메일:</label></td>
-              <td><input type="email" :value="user.email" :readonly="!isEditing"/></td>
+              <td><input type="email" v-model="user.email" :readonly="!isEditing"/></td>
             </tr>
             <tr>
               <td><label for="name">이름:</label></td>
-              <td><input type="email" :value="user.name" :readonly="!isEditing"/></td>
+              <td><input type="text" v-model="user.name" :readonly="!isEditing"/></td>
             </tr>
             <tr>
               <td><label for="age">나이:</label></td>
-              <td><input type="email" :value="user.age" readonly/></td>
+              <td>
+                <div v-if="isEditing">
+                  <v-date-picker v-model="birthdate" @change="updateAge" is-inline />
+                </div>
+                <div v-else>
+                  <input type="text" :value="user.age" readonly/>
+                </div>
+              </td>
             </tr>
             <tr>
               <td><label for="gender">성별:</label></td>
@@ -30,15 +37,15 @@
             </tr>
             <tr>
               <td><label for="phoneNumber">전화번호:</label></td>
-              <td><input type="email" :value="user.phoneNumber" :readonly="!isEditing"/></td>
+              <td><input type="text" v-model="user.phoneNumber" :readonly="!isEditing"/></td>
             </tr>
             <tr>
               <td><label for="subscriptionStatus">구독 상태:</label></td>
-              <td><input type="email" :value="user.subscriptionStatus" readonly/></td>
+              <td><input type="text" :value="user.subscriptionStatus" readonly/></td>
             </tr>
             <tr>
               <td><label for="registrationDate">가입 일자:</label></td>
-              <td><input type="email" :value="user.registrationDate" readonly/></td>
+              <td><input type="text" :value="formatDate(user.registrationDate)" readonly/></td>
             </tr>
           </table>
           <div class="btn-container">
@@ -53,7 +60,7 @@
       </div>
     </div>
 
-    <!-- 비밀번호 확인 모달찰 -->
+    <!-- 비밀번호 확인 모달창 -->
     <div v-if="showPasswordModal" class="modal">
       <div class="box-container box-shadow">
         <h4>비밀번호 확인</h4>
@@ -69,15 +76,21 @@
 
 <script>
 import axios from 'axios';
+import { DatePicker } from 'v-calendar';
 
 export default {
   name: 'MyPage',
+  components: {
+    'v-date-picker': DatePicker
+  },
   data() {
     return {
       user: null,
       isEditing: false,
-      password: '', // Add password field
+      password: '',
       showPasswordModal: false,
+      birthdate: null,
+      errors: {}
     };
   },
   created() {
@@ -98,6 +111,9 @@ export default {
     },
     toggleEdit() {
       this.isEditing = !this.isEditing;
+      if (this.isEditing) {
+        this.birthdate = new Date();
+      }
     },
     showPasswordPrompt() {
       this.showPasswordModal = true;
@@ -124,6 +140,7 @@ export default {
     },
     async updateMember() {
       try {
+        this.user.age = this.calculateAge(this.birthdate); // 나이 계산
         const response = await axios.put(`http://localhost:9095/members/update/${this.user.memberUniqueId}`, this.user);
         if (response.status === 200) {
           this.user = response.data;
@@ -141,6 +158,25 @@ export default {
       this.isEditing = false;
       this.fetchUserProfile();
     },
-  },
+    updateAge(date) {
+      this.birthdate = date;
+      this.user.age = this.calculateAge(date);
+    },
+    calculateAge(birthdate) {
+      if (!birthdate) return '';
+      const today = new Date();
+      const birthDate = new Date(birthdate);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDifference = today.getMonth() - birthDate.getMonth();
+      if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age;
+    },
+    formatDate(date) {
+      if (!date) return '';
+      return new Date(date).toISOString().split('T')[0];
+    }
+  }
 };
 </script>

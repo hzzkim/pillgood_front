@@ -1,6 +1,6 @@
 <template>
   <!-- 약관동의 -->
-  <div v-if="!formVisible" id="register_agree" class="box-container box-shadow">
+  <div v-if="!formVisible" class="box-container box-shadow" id="register_agree">
     <h4 class="text-melon">회원 가입</h4>
     <h6>[약관 동의]</h6>
     <form id="agreementfrm" @submit.prevent="validateAgreement" >
@@ -55,11 +55,11 @@
         </td>
       </tr>
       <tr>
-        <td><label for="age">나이:</label></td>
-        <td>
-          <input type="number" v-model="member.age" @blur="validateAge" required />
-          <p v-if="errors.age" class="text-danger">{{ errors.age }}</p>
-        </td>
+        <td><label for="birthdate">생년월일:&nbsp;</label></td>
+          <td>
+            <v-date-picker v-model="member.birthdate" is-inline @blur="validateBirthdate" required />
+            <p v-if="errors.birthdate" class="text-danger">{{ errors.birthdate }}</p>
+          </td>
       </tr>
       <tr>
         <td><label for="gender">성별:</label></td>
@@ -93,19 +93,22 @@
   import '../assets/styles.css';
   import TermsContent1 from '@/components/TermsContent1.vue';
   import TermsContent2 from '@/components/TermsContent2.vue';
+  import { DatePicker } from 'v-calendar';
   
   export default {
     components: {
-      TermsContent1,
-      TermsContent2
-    },
+    TermsContent1,
+    TermsContent2,
+    'v-date-picker': DatePicker 
+  },
     data() {
       return {
         member: {
           email: '',
           password: '',
           name: '',
-          age: '',
+          birthdate: '',
+          age: null,
           gender: 'N',
           phoneNumber: '',
         },
@@ -168,11 +171,11 @@
           delete this.errors.name;
         }
       },
-      validateAge() {
-        if (this.member.age <= 0) {
-          this.errors.age = '유효한 나이를 입력하세요.';
+      validateBirthdate() {
+        if (!this.member.birthdate) {
+          this.errors.birthdate = '생년월일을 선택하세요.';
         } else {
-          delete this.errors.age;
+          delete this.errors.birthdate;
         }
       },
       validateGender() {
@@ -189,22 +192,33 @@
           delete this.errors.phoneNumber;
         }
       },
+      carculateAge(birthdate) {
+        const today = new Date();
+        const birthDate = new Date(birthdate);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age;
+      },
       createMember() {
         this.validateEmail();
         this.validatePassword();
         this.validateName();
-        this.validateAge();
+        this.validateBirthdate();
         this.validateGender();
         this.validatePhoneNumber();
         console.log('Errors:', this.errors);
         if (Object.keys(this.errors).length === 0) {
+          this.member.age = this.carculateAge(this.member.birthdate);
           console.log('Sending request to server...');
           axios
             .post('http://localhost:9095/members/register', this.member)
             .then(response => {
               console.log('Server response:', response.data);
               alert('회원 가입이 완료되었습니다.');
-              this.$router.push('/');
+              this.$router.push('/login');
             })
             .catch(error => {
               console.error('Error during registration:', error);
@@ -219,7 +233,8 @@
           email: '',
           password: '',
           name: '',
-          age: '',
+          birthdate: '',
+          age: null,
           gender: 'N',
           phoneNumber: '',
         };

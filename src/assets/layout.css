@@ -1,3 +1,4 @@
+/* layout.css */
 /* 멜론색 #B4D9A9 */
 /* Tea Green #C6EDC2 */
 
@@ -16,6 +17,7 @@ html, body {
 .main-content {
   flex: 1;
 }
+
 
 /* ------------------------------------------------------------------------------ header */
 
@@ -82,6 +84,15 @@ html, body {
   margin: auto;
   border-radius: 5px;
 }
+
+/* ------------------------------------------------ username */
+
+.user-name {
+  margin-right: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
 
 /* ------------------------------------------------ icon */
 
@@ -212,12 +223,18 @@ html, body {
 
 /* ------------------------------------------------------------------------------ footer */
 
+.main-content {
+  flex: 1;
+}
+
 .footer {
   background-color: #94B58B; /* 배경색 설정 */
   color: white;
   width: 100%;
   padding: 10px;
   height: 130px; /* footer 높이 설정 */
+  position: relative;
+  bottom: 0;
 }
 
 .footer-container {
